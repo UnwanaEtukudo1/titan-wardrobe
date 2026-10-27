@@ -141,17 +141,22 @@ function showProgress(fraction) {
 async function loadModelBytes(onProgress) {
   const res = await fetch(MODEL_URL);
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${MODEL_URL}`);
+  // content-length is the compressed size when the host gzips the file, so use it for the
+  // progress bar only and collect however many bytes actually arrive.
   const total = Number(res.headers.get('content-length')) || 0;
-  if (!res.body || !total) return res.arrayBuffer();
+  if (!res.body) return res.arrayBuffer();
   const reader = res.body.getReader();
-  const out = new Uint8Array(total);
+  const chunks = [];
   let got = 0;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    out.set(value, got); got += value.length;
-    onProgress(got / total);
+    chunks.push(value); got += value.length;
+    if (total) onProgress(Math.min(got / total, 1));
   }
+  const out = new Uint8Array(got);
+  let at = 0;
+  for (const c of chunks) { out.set(c, at); at += c.length; }
   return out.buffer;
 }
 
