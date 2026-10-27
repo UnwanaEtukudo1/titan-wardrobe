@@ -42,13 +42,13 @@ body { height: 100%; margin: 0; background: var(--sheet); color: var(--ink); fon
 .loading.error { color: var(--ink); }
 
 .controls { background: var(--sheet); overflow-y: auto;
-  padding: 18px max(16px, env(safe-area-inset-right, 0px)) max(18px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
-.group { max-width: 520px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 8px; }
-.group + .group { margin-top: 10px; }
-.label { color: var(--label); font-size: 0.9rem; padding-right: 6px; }
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.group { max-width: 520px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 7px 7px; }
+.group + .group { margin-top: 7px; }
+.label { color: var(--label); font-size: 0.85rem; padding-right: 6px; }
 
 .pill { appearance: none; border: 1px solid var(--pill-edge); background: var(--pill); color: var(--ink);
-  font: 500 0.95rem/1 var(--ui); height: 42px; padding: 0 16px; border-radius: 21px; cursor: pointer;
+  font: 500 0.9rem/1 var(--ui); height: 34px; padding: 0 14px; border-radius: 17px; cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s; -webkit-tap-highlight-color: transparent; }
 .pill:hover { background: var(--pill-hover); }
 .pill:active { transform: scale(0.97); }
