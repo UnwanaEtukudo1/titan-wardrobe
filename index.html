@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a101c">
+  <title>Titan Wardrobe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&family=Marcellus&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  } }
+  </script>
+</head>
+<body>
+  <main class="app">
+    <section class="stage" id="stage" aria-label="Titan character preview">
+      <canvas id="view" aria-label="3D view of the Titan. Drag to turn."></canvas>
+      <header class="header">
+        <h1 class="title">Titan</h1>
+        <p class="subtitle">Midnight Luxe wardrobe</p>
+        <p class="hint">Drag to turn the Titan</p>
+      </header>
+      <div class="loading" id="loading" role="status">
+        <div class="loading-track"><div class="loading-bar" id="loading-bar"></div></div>
+        <span id="loading-text">Loading the Titan…</span>
+      </div>
+    </section>
+    <section class="controls" aria-label="Wardrobe controls">
+      <div class="group" id="outfit-pills"><span class="label">Outfit</span></div>
+      <div class="group" id="motion-pills"><span class="label">Motion</span></div>
+      <div class="group" id="transport-pills"></div>
+    </section>
+  </main>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
