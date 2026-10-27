@@ -99,6 +99,10 @@ frameCamera();
 // ---------------------------------------------------------------- model
 let mixer = null, body = null;
 const actions = {};
+// Blender's keep-outside-body correction for the jacket, baked per frame as morph targets named
+// "jfix_<Clip>_<frame>". Each frame the matching target(s) are blended in from the clip time.
+const FPS = 24;
+let jacketFix = null;   // { mesh, byClip: { clipName: Map(frame -> morph index) } }
 const pieceNodes = {};
 let current = null;
 
@@ -113,6 +117,14 @@ function onModel(gltf) {
     const piece = o.userData && o.userData.wardrobe_piece;
     if (piece) (pieceNodes[piece] ||= []).push(o);
     if (o.isMesh && o.morphTargetDictionary && 'fitp_jacket' in o.morphTargetDictionary) body = o;
+    if (o.isMesh && o.morphTargetDictionary && !jacketFix) {
+      const byClip = {};
+      for (const [name, i] of Object.entries(o.morphTargetDictionary)) {
+        const m = /^jfix_(.+)_(\d+)$/.exec(name);
+        if (m) (byClip[m[1]] ||= new Map()).set(Number(m[2]), i);
+      }
+      if (Object.keys(byClip).length) jacketFix = { mesh: o, byClip };
+    }
   });
   pivot.add(root);
   mixer = new THREE.AnimationMixer(root);
@@ -171,6 +183,23 @@ function applyPieces() {
       const fit = PIECES[key].fit;
       if (fit && fit in dict) inf[dict[fit]] = 1;
     }
+  }
+}
+
+function updateJacketFix() {
+  if (!jacketFix) return;
+  const inf = jacketFix.mesh.morphTargetInfluences;
+  inf.fill(0);
+  for (const [key, action] of Object.entries(actions)) {
+    const w = action.getEffectiveWeight();
+    const frames = jacketFix.byClip[MOTIONS[key].clip];
+    if (!frames || w <= 0 || !action.isRunning()) continue;
+    const t = action.time * FPS;
+    const f0 = Math.floor(t), a = t - f0;
+    const i0 = frames.get(f0) ?? frames.get(f0 + 1), i1 = frames.get(f0 + 1) ?? i0;
+    if (i0 === undefined) continue;
+    inf[i0] += w * (1 - a);
+    inf[i1] += w * a;
   }
 }
 
@@ -257,6 +286,7 @@ const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 0.1);
   if (mixer && !state.paused) mixer.update(dt);
+  updateJacketFix();
   if (state.turntable && dragX === null) pivot.rotation.y += TURNTABLE_SPEED * dt;
   if (resetting) {
     let a = THREE.MathUtils.euclideanModulo(pivot.rotation.y + Math.PI, Math.PI * 2) - Math.PI;
